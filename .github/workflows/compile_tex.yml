@@ -1,4 +1,4 @@
-name: Build LaTeX document
+name: Build and Deploy Typst
 
 on:
   push:
@@ -12,31 +12,30 @@ permissions:
   contents: write
 
 jobs:
-  build_latex:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v4
 
-      - name: Install LaTeX
+      - name: Install Python and system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            texlive-latex-base \
-            texlive-latex-recommended \
-            texlive-fonts-recommended \
-            texlive-latex-extra \
-            texlive-fonts-extra \
-            texlive-science \
-            texlive-pictures \
-            make
+          sudo apt-get install -y python3 make
 
-      - name: Build PDF with Makefile
-        run: make kactl
+      - name: Run C++ preprocessor
+        run: python3 content/tex/preprocessor_typst.py --batch
 
-      - name: Check PDF file
+      - name: Compile Typst Files
+        uses: ammar-ahmed22/compile-typst-action@v2
+        with:
+          source_paths: 'content/kactl.typ content/test-session/test-session.typ'
+          output_paths: 'kactl.pdf test-session.pdf'
+
+      - name: Check and package PDFs
         run: |
           file kactl.pdf | grep -q ' PDF '
+          file test-session.pdf | grep -q ' PDF '
           mkdir public
           cp kactl.pdf public/
           cp test-session.pdf public/
@@ -57,4 +56,3 @@ jobs:
           build_dir: public
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
