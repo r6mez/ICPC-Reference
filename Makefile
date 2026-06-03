@@ -1,38 +1,23 @@
-LATEXCMD = pdflatex -shell-escape -output-directory build/
-export TEXINPUTS=.:content/tex/:
-export max_print_line = 1048576
+CONTENT_BUILD := content/build
 
-help:
-	@echo "This makefile builds KACTL (KTH Algorithm Competition Template Library)"
-	@echo ""
-	@echo "Available commands are:"
-	@echo "	make fast		- to build KACTL, quickly (only runs LaTeX once)"
-	@echo "	make kactl		- to build KACTL"
-	@echo "	make clean		- to clean up the build process"
-	@echo "	make veryclean		- to clean up and remove kactl.pdf"
-	@echo "	make help		- to show this information"
-	@echo ""
-	@echo "For more information see the file 'doc/README'"
+fast: kactl
 
-fast: | build
-	$(LATEXCMD) content/kactl.tex </dev/null
-	cp build/kactl.pdf kactl.pdf
+kactl: | $(CONTENT_BUILD)
+	# Pre-process all C++ files (single Python invocation)
+	python3 content/tex/preprocessor_typst.py --batch
+	typst compile --root . content/kactl.typ kactl.pdf
 
-kactl: test-session.pdf | build
-	$(LATEXCMD) content/kactl.tex && $(LATEXCMD) content/kactl.tex
-	cp build/kactl.pdf kactl.pdf
+test-session:
+	typst compile --root . content/test-session/test-session.typ test-session.pdf
 
 clean:
-	cd build && rm -f kactl.aux kactl.log kactl.tmp kactl.toc kactl.pdf kactl.ptc
+	rm -rf content/build/
 
 veryclean: clean
 	rm -f kactl.pdf test-session.pdf
 
-.PHONY: help fast kactl clean veryclean
+.PHONY: help fast kactl test-session clean veryclean
 
-build:
-	mkdir -p build/
+$(CONTENT_BUILD):
+	mkdir -p $(CONTENT_BUILD)/
 
-test-session.pdf: content/test-session/test-session.tex content/test-session/chapter.tex | build
-	$(LATEXCMD) content/test-session/test-session.tex
-	cp build/test-session.pdf test-session.pdf

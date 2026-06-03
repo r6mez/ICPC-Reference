@@ -8,3 +8,5 @@ test-session.pdf
 build
 .vscode
 header.tmp
+__pycache__/
+*.bak
