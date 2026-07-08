@@ -10,4 +10,3 @@ vector<vi> divs(1e6);
 for (int i = 1; i < sz(divs); ++i)
     for (int j = i; j < sz(divs); j += i)
         divs[j].push_back(i);
-    }
