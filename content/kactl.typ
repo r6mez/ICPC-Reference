@@ -4,8 +4,8 @@
 #kactl(
   title: "KACTL",
   subtitle: "KTH Algorithm Competition Template Library",
-  team-name: "Cipher La Tasreq",
-  team-members: "Ezzeldin, Ramez, Mosayed",
+  team-name: "شجر اللمون دبلان على أرضه",
+  team-members: "Ezzeldin, Ramez, Zeyad Zahran",
   university-name: "OwO",
   university-short: "Cipher",
   university-logo: "tex/cipher.pdf",
