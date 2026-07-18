@@ -1,52 +1,49 @@
 /**
  * Author: Ramez Medhat
- * Description: Handles RURQ for XOR
- * Time: $O(\log N \cdot \log M)$. 
+ * Description: 2D range XOR update, range XOR query. 1-INDEXED.
+ * Xor has no multiplication, so the RURQ weight trick fails; instead
+ * a corner update at (i,j) reaches a[x][y] an odd number of times iff
+ * (x-i) and (y-j) are both even, i.e. x,y have the same parities as i,j.
+ * Keep 4 trees indexed by (x&1, y&1) and update/query only the
+ * matching one.
+ * Usage: Fenwick2DXor fw(n, m);
+ * fw.update(x1, y1, x2, y2, v); // rectangle ^= v
+ * fw.query(x1, y1, x2, y2); // xor over rectangle
+ * Time: $O(\log N \cdot \log M)$
  */
 #pragma once
-
-struct Fenwick2DXOR {
+struct Fenwick2DXor {
     int n, m;
-    vector<vi> bit[2][2];
+    vector<vi> bit[2][2]; // one tree per (x parity, y parity)
 
-    Fenwick2DXOR(int _n, int _m) : n(_n), m(_m) {
-        for (int px = 0; px < 2; ++px)
-            for (int py = 0; py < 2; ++py)
-                bit[px][py].assign(n+2, vi(m+2, 0));
+    Fenwick2DXor(int n, int m) : n(n), m(m) {
+        for (int px = 0; px < 2; px++)
+            for (int py = 0; py < 2; py++)
+                bit[px][py].assign(n + 1, vi(m + 1, 0));
     }
 
-    void pointXOR(int x, int y, int v) {
+    void corner(int x, int y, int v) {
         for (int i = x; i <= n; i += i & -i)
             for (int j = y; j <= m; j += j & -j)
-                bit[x&1][y&1][i][j] ^= v;
+                bit[x & 1][y & 1][i][j] ^= v;
     }
 
-    void rangeXOR(int x1, int y1, int x2, int y2, int v) {
-        if (x1 > x2 || y1 > y2) return;
-        auto upd = [&](int x, int y){ if (x > 0 && y > 0) pointXOR(x, y, v); };
-        upd(x1,      y1);
-        upd(x2 + 1,  y1);
-        upd(x1,      y2 + 1);
-        upd(x2 + 1,  y2 + 1);
+    void update(int x1, int y1, int x2, int y2, int v) {
+        corner(x1, y1, v);     corner(x2 + 1, y1, v);
+        corner(x1, y2 + 1, v); corner(x2 + 1, y2 + 1, v);
     }
 
-    int prefixXOR(int x, int y) {
+    int prefix(int x, int y) { // xor over a[1..x][1..y]
         if (x <= 0 || y <= 0) return 0;
-        int res = 0;
-        int px = x & 1, py = y & 1;
+        int s = 0;
         for (int i = x; i > 0; i -= i & -i)
             for (int j = y; j > 0; j -= j & -j)
-                res ^= bit[px][py][i][j];
-        return res;
+                s ^= bit[x & 1][y & 1][i][j];
+        return s;
     }
 
-    int rangeQuery(int x1, int y1, int x2, int y2) {
-        int res = 0;
-        res ^= prefixXOR(x2,   y2);
-        res ^= prefixXOR(x1-1, y2);
-        res ^= prefixXOR(x2,   y1-1);
-        res ^= prefixXOR(x1-1, y1-1);
-        return res;
+    int query(int x1, int y1, int x2, int y2) {
+        return prefix(x2, y2) ^ prefix(x1 - 1, y2)
+             ^ prefix(x2, y1 - 1) ^ prefix(x1 - 1, y1 - 1);
     }
 };
-

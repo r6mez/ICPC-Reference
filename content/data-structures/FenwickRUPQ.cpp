@@ -1,26 +1,25 @@
 /**
  * Author: Ramez Medhat
- * Description: Range Update, Point Query
- * Time: O(logN)
+ * Description: Range update, point query. 1-INDEXED. Trick: Fenwick over
+ * the DIFFERENCE array d[i] = a[i] - a[i-1]. Adding v on [l,r] only
+ * changes d[l] += v and d[r+1] -= v; a[i] is then the prefix sum d[1..i].
+ * Usage: FenwickRUPQ fw(n); fw.add(l, r, v); // a[l..r] += v
+ * fw.query(i); // value of a[i]
+ * Time: O(\log N)
  */
 struct FenwickRUPQ {
-    int n;
-    vi f;
-    FenwickRUPQ(int _n) : n(_n), f(n + 1, 0) {}
+    int n; vi f;
+    FenwickRUPQ(int n) : n(n), f(n + 1, 0) {}
 
-    void update(int idx, int val) {
-        for (; idx <= n; idx += idx & -idx)
-            f[idx] += val;
+    void upd(int i, int v) { // d[i] += v (no-op if i = n+1)
+        for (; i <= n; i += i & -i) f[i] += v;
     }
 
-    void rangeAdd(int l, int r, int val) {
-        update(l, val);
-        if (r + 1 <= n) update(r + 1, -val);
-    }
+    void add(int l, int r, int v) { upd(l, v); upd(r + 1, -v); }
 
-    int pointQuery(int idx) {
-        int res = 0;
-        for (; idx > 0; idx -= idx & -idx) res += f[idx];
-        return res;
+    int query(int i) { // a[i] = sum of d[1..i]
+        int s = 0;
+        for (; i > 0; i -= i & -i) s += f[i];
+        return s;
     }
 };
