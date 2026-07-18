@@ -19,11 +19,11 @@ def typst_escape(text):
 
 
 def typst_escape_preserve_mi(text):
-    """Escape Typst special chars but preserve #mi(`...`) calls."""
-    parts = re.split(r"(#mi\(`[^`]*`\))", text)
+    """Escape Typst special chars but preserve #mi(`...`) and #box(image(...)) calls."""
+    parts = re.split(r"(#mi\(`[^`]*`\)|#box\(image\([^)]*\)\))", text)
     result = []
     for part in parts:
-        if part.startswith("#mi("):
+        if part.startswith("#mi(") or part.startswith("#box("):
             result.append(part)
         else:
             result.append(typst_escape(part))
@@ -41,6 +41,23 @@ def convert_texttt(text):
     """Convert \\texttt{...} and {\\tt ...} to Typst mono code."""
     text = re.sub(r"\\texttt\{([^}]*)\}", r"`\1`", text)
     text = re.sub(r"\{\\tt\s+([^}]*)\}", r"`\1`", text)
+    return text
+
+
+def convert_latex_envs(text):
+    r"""Strip layout-only LaTeX environments and convert \includegraphics to Typst images."""
+    text = re.sub(r"\\begin\{minipage\}\{[^}]*\}", "", text)
+    text = re.sub(r"\\end\{minipage\}", "", text)
+    text = re.sub(r"\\begin\{itemize\*?\}", "", text)
+    text = re.sub(r"\\end\{itemize\*?\}", "", text)
+    text = re.sub(r"\\vspace\{[^}]*\}", "", text)
+    text = re.sub(r"\\item\s*", "• ", text)
+    text = re.sub(
+        r"\\includegraphics\[[^\]]*\]\{([^}]*)\}",
+        r'#box(image("/\1.pdf", width: 12mm))',
+        text,
+    )
+    text = re.sub(r"\\\\\s*", " ", text)  # LaTeX line breaks -> space
     return text
 
 
@@ -310,6 +327,7 @@ def process_file(filepath, outpath):
         # Metadata before the code (matching LaTeX \@makecaption called before body)
         desc = commands.get("Description", "")
         if desc:
+            desc = convert_latex_envs(desc)
             desc = convert_texttt(desc)
             desc = convert_math_to_mi(desc)
             desc = convert_latex_macros(desc)
@@ -318,6 +336,7 @@ def process_file(filepath, outpath):
 
         usage = commands.get("Usage", "")
         if usage:
+            usage = convert_latex_envs(usage)
             usage = convert_texttt(usage)
             usage = convert_math_to_mi(usage)
             usage = convert_latex_macros(usage)
