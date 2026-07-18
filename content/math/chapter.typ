@@ -42,14 +42,28 @@ where #mi(`r=\sqrt{a^2+b^2}, \phi=\operatorname{atan2}(b,a)`).
 
 == Geometry
 
+// Tiny figure helpers: coordinates in mm, y grows downward.
+#let seg(p, q, ..args) = place(line(start: (p.at(0) * 1mm, p.at(1) * 1mm), end: (q.at(0) * 1mm, q.at(1) * 1mm), stroke: 0.4pt, ..args))
+#let dseg(p, q) = seg(p, q, stroke: (thickness: 0.4pt, dash: "dashed"))
+#let pt(p) = place(dx: p.at(0) * 1mm - 0.4mm, dy: p.at(1) * 1mm - 0.4mm, circle(radius: 0.4mm, fill: black))
+#let lbl(p, body) = place(dx: p.at(0) * 1mm, dy: p.at(1) * 1mm, text(size: 7pt, body))
+#let ring(c, r) = place(dx: (c.at(0) - r) * 1mm, dy: (c.at(1) - r) * 1mm, circle(radius: r * 1mm, stroke: 0.4pt))
+#let fig(w, h, body) = align(center, box(width: w * 1mm, height: h * 1mm, body))
+// Shared triangle: A=(2,15), B=(26,15), C=(9,2)
+#let triangle = seg((2, 15), (26, 15)) + seg((26, 15), (9, 2)) + seg((9, 2), (2, 15))
+
 === Triangles
 Side lengths: #mi(`a,b,c`) \
 Semiperimeter: #mi(`p=\dfrac{a+b+c}{2}`) \
 Area: #mi(`A=\sqrt{p(p-a)(p-b)(p-c)}`) \
 Circumradius: #mi(`R=\dfrac{abc}{4A}`) \
+#fig(28, 26, triangle + ring((14, 13.08), 12.15) + pt((14, 13.08)) + seg((14, 13.08), (26, 15)) + lbl((13, 13.8), [$O$]) + lbl((19, 10.9), [$R$]))
 Inradius: #mi(`r=\dfrac{A}{p}`) \
+#fig(28, 16, triangle + ring((10.68, 9.81), 5.19) + pt((10.68, 9.81)) + seg((10.68, 9.81), (10.68, 15)) + lbl((11.4, 10.6), [$r$]))
 Length of median (divides triangle into two equal-area triangles): #mi(`m_a=\tfrac{1}{2}\sqrt{2b^2+2c^2-a^2}`) \
-Length of bisector (divides angles in two): #mi(`s_a=\sqrt{bc\left[1-\left(\dfrac{a}{b+c}\right)^2\right]}`) \
+Length of bisector (halves the angle, *not* side #mi(`a`), which it splits in ratio #mi(`c:b`)): #mi(`s_a=\sqrt{bc\left[1-\left(\dfrac{a}{b+c}\right)^2\right]}`) \
+// Wide angle at A=(11,2); bisector foot D=(12.9,13.09) splits a in ratio c:b
+#fig(28, 17, seg((11, 2), (2, 14)) + seg((2, 14), (26, 12)) + seg((26, 12), (11, 2)) + dseg((11, 2), (12.9, 13.09)) + pt((12.9, 13.09)) + lbl((13.8, 10.8), [$s_a$]) + lbl((7, 7.6), [$alpha \/ 2$]) + lbl((13.2, 7), [$alpha \/ 2$]) + lbl((16.5, 13.1), [$a$]) + lbl((19.8, 4.6), [$b$]) + lbl((3.8, 7.4), [$c$]) + lbl((9, 0.4), [$A$]))
 Law of sines: #mi(`\dfrac{\sin\alpha}{a}=\dfrac{\sin\beta}{b}=\dfrac{\sin\gamma}{c}=\dfrac{1}{2R}`) \
 Law of cosines: #mi(`a^2=b^2+c^2-2bc\cos\alpha`) \
 Law of tangents: #mi(`\dfrac{a+b}{a-b}=\dfrac{\tan\dfrac{\alpha+\beta}{2}}{\tan\dfrac{\alpha-\beta}{2}}`) \
@@ -58,6 +72,8 @@ With side lengths #mi(`a,b,c,d`), diagonals #mi(`e, f`), diagonals angle #mi(`\t
 magic flux #mi(`F=b^2+d^2-a^2-c^2`):
 
 #mitex(`4A = 2ef \cdot \sin\theta = F\tan\theta = \sqrt{4e^2f^2-F^2}`)
+
+#fig(26, 16, seg((1, 13), (21, 15)) + seg((21, 15), (25, 2)) + seg((25, 2), (6, 1)) + seg((6, 1), (1, 13)) + dseg((1, 13), (25, 2)) + dseg((21, 15), (6, 1)) + lbl((10.5, 14.6), [$a$]) + lbl((23.8, 8.2), [$b$]) + lbl((15, 2.1), [$c$]) + lbl((0.6, 6), [$d$]) + lbl((5.6, 9.6), [$e$]) + lbl((17, 10.6), [$f$]) + lbl((12.5, 4.6), [$theta$]))
 
  For cyclic quadrilaterals the sum of opposite angles is #mi(`180^\circ`),
 #mi(`ef = ac + bd`), and #mi(`A = \sqrt{(p-a)(p-b)(p-c)(p-d)}`).
