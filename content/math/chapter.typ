@@ -87,6 +87,9 @@ x = r\sin\theta\cos\phi & r = \sqrt{x^2+y^2+z^2}\\
 y = r\sin\theta\sin\phi & \theta = \textrm{acos}(z/\sqrt{x^2+y^2+z^2})\\
 z = r\cos\theta & \phi = \textrm{atan2}(y,x)
 \end{array}`)
+
+=== Trigonometry in C++
+#include "../build/TrigCpp.h.typ"
 // 
 // == Derivatives/Integrals
 // #mitex(`\begin{aligned}
