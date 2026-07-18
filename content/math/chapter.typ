@@ -57,7 +57,8 @@ Side lengths: #mi(`a,b,c`) \
 Semiperimeter: #mi(`p=\dfrac{a+b+c}{2}`) \
 Area: #mi(`A=\sqrt{p(p-a)(p-b)(p-c)}`) \
 Circumradius: #mi(`R=\dfrac{abc}{4A}`) \
-#fig(28, 26, triangle + ring((14, 13.08), 12.15) + pt((14, 13.08)) + seg((14, 13.08), (26, 15)) + lbl((13, 13.8), [$O$]) + lbl((19, 10.9), [$R$]))
+Area of a triangle inscribed in a circle of radius #mi(`R`), given its interior angles: #mi(`A=2R^2\sin\alpha\sin\beta\sin\gamma`) \
+#fig(28, 26, triangle + ring((14, 13.08), 12.15) + pt((14, 13.08)) + seg((14, 13.08), (26, 15)) + lbl((13, 13.8), [$O$]) + lbl((19, 10.9), [$R$]) + lbl((4.2, 12.6), [$alpha$]) + lbl((22.4, 12.7), [$beta$]) + lbl((8.6, 3.4), [$gamma$]))
 Inradius: #mi(`r=\dfrac{A}{p}`) \
 #fig(28, 16, triangle + ring((10.68, 9.81), 5.19) + pt((10.68, 9.81)) + seg((10.68, 9.81), (10.68, 15)) + lbl((11.4, 10.6), [$r$]))
 Length of median (divides triangle into two equal-area triangles): #mi(`m_a=\tfrac{1}{2}\sqrt{2b^2+2c^2-a^2}`) \
