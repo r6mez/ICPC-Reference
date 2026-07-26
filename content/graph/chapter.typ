@@ -51,6 +51,7 @@
 // #include "../build/MaximumIndependentSet.h.typ"
 
 == Trees
+	#include "../build/TreeDiameter.cpp.typ"
 	#include "../build/LCAAndKthAncestor.h.typ"
 	#include "../build/KruskalMST.cpp.typ"
 // #include "../build/CompressTree.h.typ"

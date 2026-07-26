@@ -19,26 +19,20 @@ using vi = vector<int>;
 int n, q, SQ;
 vi arr, blkSum;
 
-// Build block sums from the initial array in O(n)
 void preProcess() {
-    // For each element, add it to its block's sum
     for (int i = 0; i < n; ++i) {
         int blk = i / SQ;
         blkSum[blk] += arr[i];
     }
 }
 
-// Query the sum in the interval [l, r] in O(sqrt(n))
 int query(int l, int r) {
     int ans = 0;
-    // Process elements until we reach block boundary or exceed r
     while (l <= r) {
-        // If l is at the start of a block and the whole block lies within [l, r]
         if (l % SQ == 0 && l + SQ - 1 <= r) {
             ans += blkSum[l / SQ];
             l += SQ;
         } else {
-            // Otherwise, take the single element
             ans += arr[l];
             ++l;
         }
@@ -46,22 +40,18 @@ int query(int l, int r) {
     return ans;
 }
 
-// Point update: set arr[idx] = val in O(1)
 void update(int idx, int val) {
     int blk = idx / SQ;
-    // Remove old value from block sum and add new value
     blkSum[blk] -= arr[idx];
     arr[idx] = val;
     blkSum[blk] += val;
 }
 
 void solve() {
-    // Read array size and number of operations
     cin >> n >> q;
     arr.resize(n);
     cin >> arr;
 
-    // Determine block size and initialize block sums
     SQ = ceil(sqrt(n));
     blkSum.assign((n + SQ - 1) / SQ, 0);
 
@@ -71,12 +61,10 @@ void solve() {
         int op;
         cin >> op;
         if (op == 1) {
-            // Update operation: 1 pos val
             int pos, val;
             cin >> pos >> val;
             update(pos - 1, val);
         } else {
-            // Query operation: 2 l r
             int l, r;
             cin >> l >> r;
             cout << query(l - 1, r - 1) << "\n";
